@@ -1,59 +1,17 @@
 const express = require("express");
+const checkToken = require("./checkTokenMiddlware");
+const checkPassword = require("./checkPasswordMiddleware");
 
 const PORT = 3000;
 const app = express();
 app.use(express.json());
 
-const myToken = "12345";
-let checkToken = (req, res, next) => {
-  if (req.query.token === undefined || req.query.token === "") {
-    return res.send({
-      status: 0,
-      msg: "Please Fill The Token",
-    });
-  }
-  if (req.query.token !== myToken) {
-    return res.send({
-      status: 0,
-      msg: "Please Fill The Correct Token",
-    });
-  }
-
-  if (req.query.token === myToken) {
-    console.log("Token Matched Successfully");
-    next();
-  }
-};
-
-//  Middlewares
-app.use(checkToken);
-
-app.use((req, res, next) => {
-  const password = "Arslan";
-
-  if (req.query.pass === undefined || req.query.pass === "") {
-    return res.send({
-      status: 0,
-      msg: "Please Fill The Password",
-    });
-  }
-  if (req.query.pass !== password) {
-    return res.send({
-      status: 0,
-      msg: "Please Fill The Correct Password",
-    });
-  }
-
-  if (req.query.pass === password) {
-    console.log("Correct Password");
-    next();
-  }
-});
 
 // Routes
 app.get("/", (req, res) => res.send({ status: 1, msg: "Home Page API" }));
 
-app.get("/news", (req, res) => {
+// Route Level Midddleware Example
+app.get("/news", checkToken, checkPassword, (req, res) => {
   res.send({
     status: 1,
     data: [
