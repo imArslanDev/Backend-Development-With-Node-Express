@@ -1,5 +1,6 @@
 const express = require("express");
 const dbConnection = require("./DB_connection");
+const { ObjectId } = require("mongodb");
 
 const PORT = 3000
 const app = express()
@@ -31,6 +32,20 @@ app.post("/insert-student", async (req, res) => {
         status:1,
         msg: "Data Insert",
         insertResponse
+    }
+    res.send(resObj)
+})
+
+app.delete("/student-delete/:id",async (req, res) => {
+    const {id} = req.params;
+    let myDB = await dbConnection();
+    let studentCollection = myDB.collection("students")
+    let delRes = await studentCollection.deleteOne({_id: new ObjectId(id)})
+
+    let resObj = {
+        status: 1,
+        msg: "Data Delete",
+        delRes
     }
     res.send(resObj)
 })
